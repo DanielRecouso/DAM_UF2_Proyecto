@@ -3,22 +3,24 @@ using UnityEngine;
 public class CheckGround : MonoBehaviour
 {
     public static bool touchesGround;
-    void Start()
-    {
+    [SerializeField] LayerMask groundLayer;
 
-    }
-    void Update()
-    {
 
-    }
-
+    // Comprueba con que layer esta colisionando el GroundChecker
+    // En caso de que colisiones con la layer Ground puede saltar
     void OnTriggerEnter2D(Collider2D collision)
     {
-        touchesGround = true;
+        if (((1 << collision.gameObject.layer) & groundLayer) != 0)
+        {
+            touchesGround = true;
+        }
     }
 
     void OnTriggerExit2D(Collider2D collision)
     {
-        touchesGround = false;
+        if (((1 << collision.gameObject.layer) & groundLayer) != 0)
+        {
+            touchesGround = false;
+        }
     }
 }

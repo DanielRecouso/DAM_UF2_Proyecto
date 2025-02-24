@@ -2,22 +2,16 @@ using UnityEngine;
 
 public class FruitCollected : MonoBehaviour
 {
-
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
+    //Cuando el jugador entre en contacto con la fruta: 
+    // La fruta desaparece, la animación empieza y después de 0.5s desaparece el gameobject
     void OnTriggerEnter2D(Collider2D collision)
     {
-        Destroy(gameObject);
+        if (collision.CompareTag("Player"))
+        {
+            GetComponent<SpriteRenderer>().enabled = false;
+            gameObject.transform.GetChild(0).gameObject.SetActive(true);
+            Destroy(gameObject, 0.5f);
+        }
+        
     }
 }

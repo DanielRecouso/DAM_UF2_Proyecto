@@ -3,16 +3,24 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
 
+    Rigidbody2D rb;
+
+    // Variables de movimiento
     [SerializeField] float speed;
 
     [SerializeField] float jumpSpeed;
 
-    Rigidbody2D rb;
-
+    // Físicas de salto
     [SerializeField] float fallMultiplier = 2.5f;
 
     [SerializeField] float lowJumpMultiplier = 3f;
 
+    // Sprite
+    [SerializeField] SpriteRenderer spriteRenderer;
+
+    [SerializeField] Animator animator;
+
+    // Coyote time
     float coyoteTime = 0.1f;
     float coyoteTimeCounter;
 
@@ -24,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
 
+        // Coyote time 
         if (CheckGround.touchesGround)
         {
             coyoteTimeCounter = coyoteTime;
@@ -36,15 +45,33 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKey("d") || Input.GetKey(KeyCode.RightArrow))
         {
             rb.linearVelocity = new Vector2(speed, rb.linearVelocity.y);
+            spriteRenderer.flipX = false; // cambiar dirección para mirar a la derecha
+            animator.SetBool("Run", true); // cambiamos de idle a run
         }
         else if (Input.GetKey("a") || Input.GetKey(KeyCode.LeftArrow))
         {
             rb.linearVelocity = new Vector2(-speed, rb.linearVelocity.y);
+            spriteRenderer.flipX = true; // cambiar dirección para mirar a la izquierda
+            animator.SetBool("Run", true);// cambiamos de idle a run
+        }
+        else
+        {
+            animator.SetBool("Run", false);// cambiamos de run a idle
         }
         if ((Input.GetKey("space") || Input.GetKey(KeyCode.UpArrow)) && coyoteTimeCounter > 0f)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpSpeed);
             coyoteTimeCounter = 0f;
+        }
+
+        if (!CheckGround.touchesGround)
+        {
+            animator.SetBool("Jump", true);// cambiamos a saltar
+            animator.SetBool("Run", false);// quitamos correr en el aire
+        }
+        else
+        {
+            animator.SetBool("Jump", false);// quitamos saltar
         }
 
         // fisicas del salto mejoradas para que dependan de cuanto presiones el espacio
