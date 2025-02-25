@@ -21,7 +21,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Animator animator;
 
     // Coyote time
-    float coyoteTime = 0.1f;
+    float coyoteTime = 0.11f;
     float coyoteTimeCounter;
 
     void Start()
