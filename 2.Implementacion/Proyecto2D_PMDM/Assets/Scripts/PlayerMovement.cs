@@ -21,7 +21,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Animator animator;
 
     // Coyote time
-    float coyoteTime = 0.11f;
+    float coyoteTime = 0.12f;
     float coyoteTimeCounter;
 
     void Start()
@@ -87,12 +87,22 @@ public class PlayerMovement : MonoBehaviour
         // para al jugador cuando deja de pulsar 
         if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) < 0.1f)
         {
-            rb.linearVelocity = new Vector2(Mathf.MoveTowards(rb.linearVelocity.x, 0, 20 * Time.deltaTime), rb.linearVelocity.y);
+            rb.linearVelocity = new Vector2(Mathf.MoveTowards(rb.linearVelocity.x, 0, 40 * Time.deltaTime), rb.linearVelocity.y);
 
         }
+        if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0 && Mathf.Abs(Input.GetAxisRaw("Horizontal")) < 0.5f)
+        {
+            rb.linearVelocity = new Vector2(1 * Mathf.Sign(Input.GetAxisRaw("Horizontal")), rb.linearVelocity.y);
+        }
+
 
     }
     void Update()
+    {
+
+    }
+
+    void OnDestroy()
     {
 
     }

@@ -10,8 +10,9 @@ public class FruitCollected : MonoBehaviour
         {
             GetComponent<SpriteRenderer>().enabled = false;
             gameObject.transform.GetChild(0).gameObject.SetActive(true);
+            FruitManager.Instance.FruitCollected(gameObject.tag);
             Destroy(gameObject, 0.5f);
         }
-        
+
     }
 }
