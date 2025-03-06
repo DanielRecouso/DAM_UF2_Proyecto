@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -9,6 +10,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float speed;
 
     [SerializeField] float jumpSpeed;
+    [SerializeField] float doubleJumpSpeed;
+
+    [SerializeField] Vector2 wallJumpForce;
+
+    bool canDoubleJump;
+    bool hasWallJumped;
+
 
     // Físicas de salto
     [SerializeField] float fallMultiplier = 2.5f;
@@ -29,18 +37,79 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    void FixedUpdate()
+    void Update()
     {
-
         // Coyote time 
         if (CheckGround.touchesGround)
         {
             coyoteTimeCounter = coyoteTime;
+            hasWallJumped = false;
         }
         else
         {
             coyoteTimeCounter -= Time.deltaTime;
         }
+
+        if (Input.GetKey("space") || Input.GetKey(KeyCode.UpArrow))
+        {
+            if (coyoteTimeCounter > 0f)
+            {
+                canDoubleJump = true;
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpSpeed);
+                coyoteTimeCounter = 0f;
+            }
+            else
+            {
+                if (Input.GetKeyDown("space") || Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    if (CheckWall.touchesWall && !hasWallJumped)
+                    {
+                        hasWallJumped = true;
+                        canDoubleJump = false;
+                        Debug.Log("wall touch");
+                        rb.linearVelocity = new Vector2(-wallJumpForce.x, wallJumpForce.y);
+                    }
+                    if (canDoubleJump && !hasWallJumped)
+                    {
+                        animator.SetBool("DoubleJump", true);
+                        rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpSpeed);
+                        coyoteTimeCounter = 0f;
+                        canDoubleJump = false;
+                    }
+                }
+            }
+        }
+
+        if (!CheckGround.touchesGround)
+        {
+            animator.SetBool("Jump", true);// cambiamos a saltar
+            animator.SetBool("Run", false);// quitamos correr en el aire
+        }
+        else
+        {
+            animator.SetBool("Jump", false);// quitamos saltar
+            animator.SetBool("DoubleJump", false);
+            animator.SetBool("Falling", false);
+        }
+        if (rb.linearVelocity.y < 0)
+        {
+            animator.SetBool("Falling", true);
+        }
+        else if (rb.linearVelocity.y > 0)
+        {
+            animator.SetBool("Falling", false);
+        }
+
+        if (rb.linearVelocity.y < -20)
+        {
+            rb.transform.GetComponent<PlayerRespawn>().PlayerDamaged();
+
+        }
+    }
+
+    void FixedUpdate()
+    {
+
         // Teclas de movimiento
         if (Input.GetKey("d") || Input.GetKey(KeyCode.RightArrow))
         {
@@ -57,21 +126,6 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             animator.SetBool("Run", false);// cambiamos de run a idle
-        }
-        if ((Input.GetKey("space") || Input.GetKey(KeyCode.UpArrow)) && coyoteTimeCounter > 0f)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpSpeed);
-            coyoteTimeCounter = 0f;
-        }
-
-        if (!CheckGround.touchesGround)
-        {
-            animator.SetBool("Jump", true);// cambiamos a saltar
-            animator.SetBool("Run", false);// quitamos correr en el aire
-        }
-        else
-        {
-            animator.SetBool("Jump", false);// quitamos saltar
         }
 
         // fisicas del salto mejoradas para que dependan de cuanto presiones el espacio
@@ -95,10 +149,6 @@ public class PlayerMovement : MonoBehaviour
             rb.linearVelocity = new Vector2(1 * Mathf.Sign(Input.GetAxisRaw("Horizontal")), rb.linearVelocity.y);
         }
 
-
-    }
-    void Update()
-    {
 
     }
 

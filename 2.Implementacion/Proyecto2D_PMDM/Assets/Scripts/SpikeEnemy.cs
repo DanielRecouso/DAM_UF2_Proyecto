@@ -4,7 +4,7 @@ public class SpikeEnemy : MonoBehaviour
 {
     public float movedownSpeed;
 
-    public float moveupSpeed;        // Velocidad del movimiento hacia arriba y hacia abajo
+    public float moveupSpeed;
     private bool movingDown = true;  // Controla si el objeto se mueve hacia abajo o hacia arriba
 
     private Rigidbody2D rb;
