@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class SpikeEnemy : MonoBehaviour
 {
-    public float movedownSpeed;
+    [SerializeField] float movedownSpeed;
 
-    public float moveupSpeed;
-    private bool movingDown = true;  // Controla si el objeto se mueve hacia abajo o hacia arriba
+    [SerializeField] float moveupSpeed;
+    bool movingDown = true;  // Controla si el objeto se mueve hacia abajo o hacia arriba
 
-    private Rigidbody2D rb;
+    Rigidbody2D rb;
 
     void Start()
     {
@@ -35,7 +35,6 @@ public class SpikeEnemy : MonoBehaviour
         movingDown = !movingDown;
         if (collision.transform.CompareTag("Player"))
         {
-            Debug.Log("player damaged");
             collision.transform.GetComponent<PlayerRespawn>().PlayerDamaged();
         }
     }

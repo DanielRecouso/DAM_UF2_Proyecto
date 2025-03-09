@@ -1,160 +1,170 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    // Components
+    private Rigidbody2D rb;
+    private Animator animator;
 
-    Rigidbody2D rb;
+    // Movement variables
+    [SerializeField] private float speed = 8f;
+    [SerializeField] private float jumpSpeed = 12f;
+    [SerializeField] private float doubleJumpSpeed = 10f;
+    private bool canDoubleJump = false;
+    private bool hasDoubleJumped = false;
 
-    // Variables de movimiento
-    [SerializeField] float speed;
+    // Wall sliding variables
+    private bool isWallSliding;
+    [SerializeField] private float wallSlidingSpeed = 2f;
 
-    [SerializeField] float jumpSpeed;
-    [SerializeField] float doubleJumpSpeed;
+    // Physics variables
+    [SerializeField] private float fallMultiplier = 2.5f;
+    [SerializeField] private float lowJumpMultiplier = 3f;
 
-    [SerializeField] Vector2 wallJumpForce;
+    // Ground and wall detection
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private LayerMask wallLayer;
+    [SerializeField] private Transform wallCheck;
 
-    bool canDoubleJump;
-    bool hasWallJumped;
+    // Coyote time and jump buffering
+    private float coyoteTime = 0.12f;
+    private float coyoteTimeCounter;
 
+    // Facing direction
+    private bool isFacingRight = true;
 
-    // Físicas de salto
-    [SerializeField] float fallMultiplier = 2.5f;
-
-    [SerializeField] float lowJumpMultiplier = 3f;
-
-    // Sprite
-    [SerializeField] SpriteRenderer spriteRenderer;
-
-    [SerializeField] Animator animator;
-
-    // Coyote time
-    float coyoteTime = 0.12f;
-    float coyoteTimeCounter;
+    [SerializeField] GameObject optionsPanel;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
     {
-        // Coyote time 
-        if (CheckGround.touchesGround)
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            optionsPanel.SetActive(true);
+            Time.timeScale = 0;
+        }
+
+        HandleCoyoteTime();
+        HandleJump();
+        HandleAnimations();
+        WallSlide();
+    }
+
+    void FixedUpdate()
+    {
+        HandleMovement();
+        HandleJumpPhysics();
+    }
+
+    private void HandleCoyoteTime()
+    {
+        if (IsGrounded())
         {
             coyoteTimeCounter = coyoteTime;
-            hasWallJumped = false;
+            canDoubleJump = true;
+            hasDoubleJumped = false;
         }
         else
         {
             coyoteTimeCounter -= Time.deltaTime;
         }
+    }
 
-        if (Input.GetKey("space") || Input.GetKey(KeyCode.UpArrow))
+    private void HandleJump()
+    {
+        if (Input.GetKeyDown("space") || Input.GetKeyDown(KeyCode.UpArrow))
         {
-            if (coyoteTimeCounter > 0f)
+            if (coyoteTimeCounter > 0f && !isWallSliding)
             {
-                canDoubleJump = true;
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpSpeed);
+                Jump(jumpSpeed);
                 coyoteTimeCounter = 0f;
             }
-            else
+            else if (canDoubleJump && !hasDoubleJumped && !isWallSliding)
             {
-                if (Input.GetKeyDown("space") || Input.GetKeyDown(KeyCode.UpArrow))
-                {
-                    if (CheckWall.touchesWall && !hasWallJumped)
-                    {
-                        hasWallJumped = true;
-                        canDoubleJump = false;
-                        Debug.Log("wall touch");
-                        rb.linearVelocity = new Vector2(-wallJumpForce.x, wallJumpForce.y);
-                    }
-                    if (canDoubleJump && !hasWallJumped)
-                    {
-                        animator.SetBool("DoubleJump", true);
-                        rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpSpeed);
-                        coyoteTimeCounter = 0f;
-                        canDoubleJump = false;
-                    }
-                }
+                Jump(doubleJumpSpeed);
+                hasDoubleJumped = true;
             }
         }
-
-        if (!CheckGround.touchesGround)
-        {
-            animator.SetBool("Jump", true);// cambiamos a saltar
-            animator.SetBool("Run", false);// quitamos correr en el aire
-        }
-        else
-        {
-            animator.SetBool("Jump", false);// quitamos saltar
-            animator.SetBool("DoubleJump", false);
-            animator.SetBool("Falling", false);
-        }
-        if (rb.linearVelocity.y < 0)
-        {
-            animator.SetBool("Falling", true);
-        }
-        else if (rb.linearVelocity.y > 0)
-        {
-            animator.SetBool("Falling", false);
-        }
-
-        if (rb.linearVelocity.y < -20)
-        {
-            rb.transform.GetComponent<PlayerRespawn>().PlayerDamaged();
-
-        }
     }
 
-    void FixedUpdate()
+    private void Jump(float jumpForce)
     {
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+        animator.SetBool("Jump", true);
+    }
 
-        // Teclas de movimiento
-        if (Input.GetKey("d") || Input.GetKey(KeyCode.RightArrow))
+    private void HandleMovement()
+    {
+        float horizontalInput = Input.GetAxisRaw("Horizontal");
+        rb.linearVelocity = new Vector2(horizontalInput * speed, rb.linearVelocity.y);
+
+        if ((horizontalInput > 0f && !isFacingRight) || (horizontalInput < 0f && isFacingRight))
         {
-            rb.linearVelocity = new Vector2(speed, rb.linearVelocity.y);
-            spriteRenderer.flipX = false; // cambiar dirección para mirar a la derecha
-            animator.SetBool("Run", true); // cambiamos de idle a run
-        }
-        else if (Input.GetKey("a") || Input.GetKey(KeyCode.LeftArrow))
-        {
-            rb.linearVelocity = new Vector2(-speed, rb.linearVelocity.y);
-            spriteRenderer.flipX = true; // cambiar dirección para mirar a la izquierda
-            animator.SetBool("Run", true);// cambiamos de idle a run
-        }
-        else
-        {
-            animator.SetBool("Run", false);// cambiamos de run a idle
+            Flip();
         }
 
-        // fisicas del salto mejoradas para que dependan de cuanto presiones el espacio
-        if (rb.linearVelocity.y < 0)
-        {
-            rb.linearVelocity += Vector2.up * (Physics2D.gravity.y * (fallMultiplier - 1)) * Time.deltaTime;
-        }
-        if (rb.linearVelocity.y > 0 && !Input.GetKey("space") && !Input.GetKey(KeyCode.UpArrow))
-        {
-            rb.linearVelocity += Vector2.up * (Physics2D.gravity.y * (lowJumpMultiplier - 1)) * Time.deltaTime;
-        }
-
-        // para al jugador cuando deja de pulsar 
-        if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) < 0.1f)
+        if (Mathf.Abs(horizontalInput) < 0.1f)
         {
             rb.linearVelocity = new Vector2(Mathf.MoveTowards(rb.linearVelocity.x, 0, 40 * Time.deltaTime), rb.linearVelocity.y);
-
         }
-        if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0 && Mathf.Abs(Input.GetAxisRaw("Horizontal")) < 0.5f)
-        {
-            rb.linearVelocity = new Vector2(1 * Mathf.Sign(Input.GetAxisRaw("Horizontal")), rb.linearVelocity.y);
-        }
-
-
     }
 
-    void OnDestroy()
+    private void HandleJumpPhysics()
     {
-
+        if (rb.linearVelocity.y < 0)
+        {
+            rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+        }
+        else if (rb.linearVelocity.y > 0 && !Input.GetKey("space") && !Input.GetKey(KeyCode.UpArrow))
+        {
+            rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
+        }
     }
 
+    private void HandleAnimations()
+    {
+        animator.SetBool("Run", Mathf.Abs(rb.linearVelocity.x) > 0.1f && IsGrounded());
+        animator.SetBool("Jump", !IsGrounded() && rb.linearVelocity.y > 0.1f);
+        animator.SetBool("Falling", !IsGrounded() && rb.linearVelocity.y < -0.1f);
+        animator.SetBool("DoubleJump", hasDoubleJumped);
+    }
+
+    private void Flip()
+    {
+        isFacingRight = !isFacingRight;
+        Vector3 localScale = transform.localScale;
+        localScale.x *= -1f;
+        transform.localScale = localScale;
+    }
+
+    private bool IsGrounded()
+    {
+        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+    }
+
+    private bool IsWalled()
+    {
+        return Physics2D.OverlapCircle(wallCheck.position, 0.2f, wallLayer);
+    }
+
+    private void WallSlide()
+    {
+        if (IsWalled() && !IsGrounded() && Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0f)
+        {
+            isWallSliding = true;
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, -wallSlidingSpeed);
+            animator.SetBool("Slide", true);
+        }
+        else
+        {
+            isWallSliding = false;
+            animator.SetBool("Slide", false);
+        }
+    }
 }

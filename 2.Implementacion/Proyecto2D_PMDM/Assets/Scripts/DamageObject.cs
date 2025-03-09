@@ -7,7 +7,6 @@ public class DamageObject : MonoBehaviour
     {
         if (collision.transform.CompareTag("Player"))
         {
-            Debug.Log("player damaged");
             collision.transform.GetComponent<PlayerRespawn>().PlayerDamaged();
         }
     }

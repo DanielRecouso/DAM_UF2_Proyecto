@@ -9,15 +9,16 @@ TagManager:
   - StrawberryContainer
   - Apple
   - Strawberry
+  - Wall
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Ground
+  - 
   - Water
   - UI
-  - 
-  - 
+  - Ground
+  - Wall
   - 
   - 
   - 
