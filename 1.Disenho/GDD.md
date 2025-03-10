@@ -1,54 +1,48 @@
 # GDD
 
-(Cubrir según necesidades)
-
 ## PRESENTACIÓN/RESUMEN
 
-- Título. 
-- Concepto: descripción breve (un párrafo) de las ideas principales del juego
-- Género (puede ser más de uno)
-- Público (target audience)
-- Plataforma (PC, smartphone, tablet,...)
+- Título : 2D Platformer
+- Concepto: Es u n juego de plataformas típico con enemigos y trampas, recoges frutas para ganar.
+- Género: Plataformas.
+- Público: Adolescentes
+- Plataforma: Está hecho para PC, pero por su naturaleza no sería muy complicado adaptarlo a móvil.
 
 ## GAMEPLAY
 
 ### Objetivos
 
-Descripción de cuáles son los objetivos principales (y secundarios si los hay) del juego
+El objetivo principal del juego es sobrevivir y recolectar frutas para pasar de nivel.
 
 #### Jugabilidad
 
-Descripción de la interacción y experiencia del jugador. Sistemas de premios o recompensas. Puzzles,...
+Sortear trampas y enemigos mientras saltas por plataformas recolectando frutas.
 
 ### Progresión
 
-Avance entre las distintas fases (si las hay) del juego.
+Cuando terminas de recoger las frutas de un nivel se cuenta como finalizado y se pasa al siguiente.
 
 ### GUI
 
-Descripción del GUI y de la información mostrada al jugador durante el desarrollo de la partida
+Se muestran las frutas que quedan y las que llevas conseguidas, un mensaje de victoria al recolectarlas todas y un menu de pausa con 4 opciones ( Menu principal, volver al juego, reiniciar nivel o salir del juego).
 
 ## MECÁNICAS
 
-- Reglas: condiciones de victoria, condiciones de pérdida, reglas de combate,...
-- Interacción: controles e interacción del jugador con el personaje, acciones posibles, interacción con otros elementos o personajes,...
-- Puntaje: sistema de puntaje
-- Dificultad: parámetros de dificultad progresiva
+- Reglas: Ganas si sobrevives y consigues todas las frutas. Mueres al tocar enemigos o trampas.
+- Interacción: Te puedes mover hacia los lados, saltar, hacer doble salto y deslizarte por las paredes más lentamente.
+- Puntaje: No hay puntaje como tal pero si un contador de frutas.
+- Dificultad: La idea es que cada nivel aumente en dificultad, pero al haber hecho solo 2 niveles por ahora no se nota todavía.
 
 ## ELEMENTOS DEL VIDEOJUEGO
 
-Caracterización del mundo/entorno en el que se desarrolla el videojuego (Worldbuilding). Puede incluir:
-
-- Leyes físicas
-- Historia
-- Personajes: descripción, arte,...
-- Niveles
-- Elementos culturales o geográficos
-- ...
+Tengo un personaje principal, trampas de suelo y otras móviles , así como enemigos con patrones de movimiento entre puntos.
 
 ## ASSETS
 
 - Música
 - Efectos de sonido
-- Modelos 2D/3D
-- ...
+- Modelos 2D
+- Fuentes de texto
+- Animaciones
+- Palette ( para crear el mapa con un tilemap )
+- Materials
