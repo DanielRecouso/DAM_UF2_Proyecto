@@ -7,6 +7,7 @@
 - Género: Plataformas.
 - Público: Adolescentes
 - Plataforma: Está hecho para PC, pero por su naturaleza no sería muy complicado adaptarlo a móvil.
+- Tutorial seguido https://www.youtube.com/watch?v=-m7ZaHhkDAc  ( es una serie de varios videos de la que utilice algunos que me servían)
 
 ## GAMEPLAY
 
