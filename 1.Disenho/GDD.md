@@ -1,6 +1,6 @@
 # GDD
 
-## PRESENTACIÓN/RESUMEN
+## PRESENTACIÓN/RESUMEN
 
 - Título : 2D Platformer
 - Concepto: Es u n juego de plataformas típico con enemigos y trampas, recoges frutas para ganar.
@@ -11,11 +11,11 @@
 
 ## GAMEPLAY
 
-### Objetivos
+### Objetivos
 
 El objetivo principal del juego es sobrevivir y recolectar frutas para pasar de nivel.
 
-#### Jugabilidad
+### Jugabilidad
 
 Sortear trampas y enemigos mientras saltas por plataformas recolectando frutas.
 
